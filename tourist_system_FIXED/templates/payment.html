@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Secure Payment</h1>
+        <p class="hero-subtitle">Complete your booking with a secure transaction</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Payment Details</h2>
+    
+    {% if booking %}
+    <div class="form-container">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">
+                <i class="fas fa-ticket-alt"></i> Booking Information
+            </h3>
+            <div style="display: grid; gap: 0.8rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-box"></i> Package:</span>
+                    <strong>{{ booking.package.name }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-calendar"></i> Travel Date:</span>
+                    <strong>{{ booking.travel_date }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-users"></i> People:</span>
+                    <strong>{{ booking.num_people }}</strong>
+                </div>
+                <hr style="border-color: rgba(255,255,255,0.3); margin: 0.5rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.5rem;">
+                    <span><i class="fas fa-rupee-sign"></i> Total Amount:</span>
+                    <strong>₹{{ "%.2f"|format(booking.total_amount) }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <form method="POST" action="{{ url_for('payment') }}">
+            <div class="form-group">
+                <label for="card_holder_name">
+                    <i class="fas fa-user"></i> Card Holder Name
+                </label>
+                <input type="text" id="card_holder_name" name="card_holder_name" 
+                       class="form-control" placeholder="Enter name on card" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="card_number">
+                    <i class="fas fa-credit-card"></i> Card Number
+                </label>
+                <input type="text" id="card_number" name="card_number" 
+                       class="form-control" placeholder="1234 5678 9012 3456" 
+                       maxlength="19" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="expiry">
+                        <i class="fas fa-calendar"></i> Expiry Date
+                    </label>
+                    <input type="text" id="expiry" name="expiry" 
+                           class="form-control" placeholder="MM/YY" 
+                           maxlength="5" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cvv">
+                        <i class="fas fa-lock"></i> CVV
+                    </label>
+                    <input type="text" id="cvv" name="cvv" 
+                           class="form-control" placeholder="123" 
+                           maxlength="3" required>
+                </div>
+            </div>
+            
+            <div style="background: #e8f5e9; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                <p style="margin: 0; color: #2e7d32; font-size: 0.95rem;">
+                    <i class="fas fa-shield-alt"></i> 
+                    Your payment information is secure and encrypted.
+                </p>
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-block">
+                <i class="fas fa-check-circle"></i> Pay ₹{{ "%.2f"|format(booking.total_amount) }}
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff9800;"></i>
+        <h3 style="margin-top: 1rem;">No booking found</h3>
+        <p style="color: #666;">Please create a booking first.</p>
+        <a href="{{ url_for('booking') }}" class="btn btn-primary" style="margin-top: 1rem;">
+            <i class="fas fa-ticket-alt"></i> Create Booking
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Format card number
+    document.getElementById('card_number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+    
+    // Format expiry date
+    document.getElementById('expiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+    
+    // Only allow numbers in CVV
+    document.getElementById('cvv').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+</script>
+{% endblock %}

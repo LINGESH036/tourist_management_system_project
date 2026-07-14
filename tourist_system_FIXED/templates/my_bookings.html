@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">My Bookings</h1>
+        <p class="hero-subtitle">Track and manage your travel reservations</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Your Bookings</h2>
+    
+    {% if bookings %}
+    <div style="display: grid; gap: 2rem;">
+        {% for booking in bookings %}
+        <div style="background: white; border-radius: 20px; overflow: hidden; 
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div style="background: var(--gradient-main); color: white; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">
+                        <i class="fas fa-ticket-alt"></i> Booking #{{ booking.id }}
+                    </h3>
+                    <span class="status-badge status-{{ booking.status }}">
+                        {{ booking.status|upper }}
+                    </span>
+                </div>
+            </div>
+            
+            <div style="padding: 2rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                            <i class="fas fa-box"></i> Package
+                        </p>
+                        <p style="font-weight: 600; color: var(--dark); margin: 0;">
+                            {{ booking.package.name }}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                            <i class="fas fa-calendar"></i> Travel Date
+                        </p>
+                        <p style="font-weight: 600; color: var(--dark); margin: 0;">
+                            {{ booking.travel_date }}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                            <i class="fas fa-users"></i> People
+                        </p>
+                        <p style="font-weight: 600; color: var(--dark); margin: 0;">
+                            {{ booking.num_people }}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <p style="color: #999; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                            <i class="fas fa-rupee-sign"></i> Total Amount
+                        </p>
+                        <p style="font-weight: 700; color: var(--primary); font-size: 1.3rem; margin: 0;">
+                            ₹{{ "%.2f"|format(booking.total_amount) }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+                    <p style="color: #666; font-size: 0.9rem;">
+                        <i class="fas fa-clock"></i> Booked on {{ booking.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fas fa-inbox" style="font-size: 4rem; color: #ddd;"></i>
+        <h3 style="margin-top: 1rem; color: var(--dark);">No bookings yet</h3>
+        <p style="color: #666; margin-bottom: 1.5rem;">Start your journey by booking a package</p>
+        <a href="{{ url_for('packages') }}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Explore Packages
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

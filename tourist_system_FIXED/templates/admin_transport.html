@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Manage Transport - Admin{% endblock %}
+{% block extra_css %}
+<style>
+.admin-page { max-width:1200px; margin:0 auto; padding:100px 1.5rem 3rem; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; }
+.page-header h2 { font-size:1.8rem; font-weight:700; color:#2d3436; }
+.btn-add { background:linear-gradient(135deg,#9b59b6,#8e44ad); color:white; padding:0.7rem 1.5rem; border-radius:10px; text-decoration:none; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; }
+.transport-table { background:white; border-radius:16px; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th { background:#f8f9fa; padding:0.75rem 1rem; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; color:#636e72; white-space:nowrap; }
+td { padding:0.85rem 1rem; border-top:1px solid #f0f0f0; font-size:0.87rem; vertical-align:middle; }
+tr:hover td { background:#fafafa; }
+.badge { padding:0.25rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:600; }
+.badge-pending { background:#fff3cd; color:#856404; }
+.badge-confirmed { background:#d1e7dd; color:#0a3622; }
+.badge-cancelled { background:#f8d7da; color:#842029; }
+.badge-completed { background:#cce5ff; color:#004085; }
+.transport-type { background:#e8daef; color:#6c3483; padding:0.2rem 0.6rem; border-radius:20px; font-size:0.75rem; font-weight:600; }
+.action-btns { display:flex; gap:0.4rem; }
+.btn-edit { background:#9b59b6; color:white; padding:0.3rem 0.7rem; border-radius:7px; text-decoration:none; font-size:0.78rem; font-weight:600; }
+.btn-delete { background:#e74c3c; color:white; padding:0.3rem 0.7rem; border-radius:7px; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; }
+.status-select { padding:0.25rem 0.5rem; border:1.5px solid #dfe6e9; border-radius:6px; font-size:0.78rem; outline:none; cursor:pointer; }
+.empty-state { text-align:center; padding:3rem; color:#636e72; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="page-header">
+        <h2><i class="fas fa-bus"></i> Transport Bookings</h2>
+        <a href="{{ url_for('admin_transport_add') }}" class="btn-add">
+            <i class="fas fa-plus"></i> Add Transport
+        </a>
+    </div>
+
+    <div class="transport-table">
+        <h3 style="margin-bottom:1.2rem; font-size:1rem; color:#2d3436;">All Transport Requests ({{ transports|length }})</h3>
+        {% if transports %}
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Customer</th><th>Type</th><th>Pickup</th><th>Drop</th><th>Travel Date</th><th>Status</th><th>Booked</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for t in transports %}
+            <tr>
+                <td><strong>#{{ t.id }}</strong></td>
+                <td>{{ t.user.full_name }}</td>
+                <td><span class="transport-type">{{ t.transport_type }}</span></td>
+                <td>{{ t.pickup_location }}</td>
+                <td>{{ t.drop_location }}</td>
+                <td>{{ t.travel_date }}</td>
+                <td><span class="badge badge-{{ t.status }}">{{ t.status|upper }}</span></td>
+                <td style="color:#636e72; font-size:0.8rem;">{{ t.created_at.strftime('%b %d, %Y') }}</td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('admin_transport_edit', id=t.id) }}" class="btn-edit"><i class="fas fa-edit"></i></a>
+                        <form method="POST" action="{{ url_for('admin_transport_delete', id=t.id) }}" style="display:inline;" onsubmit="return confirm('Delete transport #{{ t.id }}?')">
+                            <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-bus" style="font-size:3rem; color:#dfe6e9; display:block; margin-bottom:1rem;"></i>
+            No transport bookings yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

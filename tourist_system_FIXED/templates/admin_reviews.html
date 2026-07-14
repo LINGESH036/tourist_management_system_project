@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Manage Reviews - Admin{% endblock %}
+{% block extra_css %}
+<style>
+.admin-page { max-width:1100px; margin:0 auto; padding:100px 1.5rem 3rem; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; }
+.page-header h2 { font-size:1.8rem; font-weight:700; color:#2d3436; }
+.reviews-table { background:white; border-radius:16px; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th { background:#f8f9fa; padding:0.75rem 1rem; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; color:#636e72; }
+td { padding:0.85rem 1rem; border-top:1px solid #f0f0f0; font-size:0.88rem; vertical-align:top; }
+tr:hover td { background:#fafafa; }
+.stars { color:#f39c12; font-size:0.9rem; white-space:nowrap; }
+.review-text { max-width:350px; color:#636e72; line-height:1.5; }
+.action-btns { display:flex; gap:0.4rem; }
+.btn-edit { background:#f39c12; color:white; padding:0.3rem 0.7rem; border-radius:7px; text-decoration:none; font-size:0.78rem; font-weight:600; }
+.btn-delete { background:#e74c3c; color:white; padding:0.3rem 0.7rem; border-radius:7px; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; }
+.empty-state { text-align:center; padding:3rem; color:#636e72; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="page-header">
+        <h2><i class="fas fa-star"></i> Customer Reviews</h2>
+    </div>
+
+    <div class="reviews-table">
+        <h3 style="margin-bottom:1.2rem; font-size:1rem; color:#2d3436;">All Reviews ({{ reviews|length }})</h3>
+        {% if reviews %}
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Name</th><th>Rating</th><th>Review</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for r in reviews %}
+            <tr>
+                <td><strong>#{{ r.id }}</strong></td>
+                <td><strong>{{ r.name }}</strong></td>
+                <td>
+                    <div class="stars">
+                        {% for i in range(r.rating) %}⭐{% endfor %}
+                        <small style="color:#636e72;">({{ r.rating }}/5)</small>
+                    </div>
+                </td>
+                <td class="review-text">{{ r.review_text }}</td>
+                <td style="color:#636e72; font-size:0.82rem; white-space:nowrap;">{{ r.created_at.strftime('%b %d, %Y') }}</td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('admin_reviews_edit', id=r.id) }}" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                        <form method="POST" action="{{ url_for('admin_reviews_delete', id=r.id) }}" style="display:inline;" onsubmit="return confirm('Delete this review?')">
+                            <button type="submit" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-comment-slash" style="font-size:3rem; color:#dfe6e9; display:block; margin-bottom:1rem;"></i>
+            No reviews yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Tourist Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600');">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-globe-americas"></i> Join Wanderlust
+            </h1>
+            <p class="hero-subtitle">Create Your Account and Start Exploring</p>
+            
+            <div class="form-container" style="margin-top: 2rem;">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: var(--dark);">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </h2>
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="form-group">
+                        <label for="full_name"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="full_name" name="full_name" class="form-control" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="password" name="password" class="form-control" 
+                               placeholder="Create a password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" 
+                               class="form-control" placeholder="Confirm your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </form>
+                
+                <p style="text-align: center; margin-top: 1.5rem; color: #666;">
+                    Already have an account? 
+                    <a href="{{ url_for('login') }}" class="link-text">Login Here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(100px)';
+                setTimeout(() => alert.remove(), 400);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

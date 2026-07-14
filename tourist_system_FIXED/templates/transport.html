@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Transport - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Transportation Services</h1>
+        <p class="hero-subtitle">Book comfortable and reliable transport</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Book Transportation</h2>
+    
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('transport') }}">
+            <div class="form-group">
+                <label for="transport_type">
+                    <i class="fas fa-car"></i> Transport Type
+                </label>
+                <select id="transport_type" name="transport_type" class="form-control" required>
+                    <option value="">Select transport type</option>
+                    <option value="Cab (Private)">🚗 Cab (Private)</option>
+                    <option value="Shared Taxi">🚕 Shared Taxi</option>
+                    <option value="Mini Bus">🚐 Mini Bus</option>
+                    <option value="Luxury Bus">🚌 Luxury Bus</option>
+                    <option value="Airport Pickup/Drop">✈️ Airport Pickup/Drop</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pickup_location">
+                    <i class="fas fa-map-marker-alt"></i> Pickup Location
+                </label>
+                <input type="text" id="pickup_location" name="pickup_location" 
+                       class="form-control" placeholder="Enter pickup location" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="drop_location">
+                    <i class="fas fa-map-marker-alt"></i> Drop Location
+                </label>
+                <input type="text" id="drop_location" name="drop_location" 
+                       class="form-control" placeholder="Enter drop location" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="travel_date">
+                    <i class="fas fa-calendar"></i> Travel Date
+                </label>
+                <input type="date" id="travel_date" name="travel_date" 
+                       class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-check"></i> Book Transport
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('travel_date').setAttribute('min', today);
+</script>
+{% endblock %}

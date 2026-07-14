@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tourist Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if session.user_id %}
+    <nav>
+        <div class="nav-container">
+            <a href="{{ url_for('destinations') }}" class="nav-brand">
+                <i class="fas fa-globe-americas"></i> Wanderlust
+            </a>
+            <div class="nav-links">
+                {% if session.is_admin %}
+                    <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-dashboard"></i> Dashboard</a>
+                    <a href="{{ url_for('admin_destinations') }}"><i class="fas fa-map-marked-alt"></i> Destinations</a>
+                    <a href="{{ url_for('admin_packages') }}"><i class="fas fa-box"></i> Packages</a>
+                    <a href="{{ url_for('admin_bookings') }}"><i class="fas fa-ticket-alt"></i> Bookings</a>
+                    <a href="{{ url_for('admin_reviews') }}"><i class="fas fa-star"></i> Reviews</a>
+                    <a href="{{ url_for('admin_transport') }}"><i class="fas fa-bus"></i> Transport</a>
+                {% else %}
+                    <a href="{{ url_for('destinations') }}"><i class="fas fa-map-marked-alt"></i> Destinations</a>
+                    <a href="{{ url_for('packages') }}"><i class="fas fa-box"></i> Packages</a>
+                    <a href="{{ url_for('booking') }}"><i class="fas fa-ticket-alt"></i> Booking</a>
+                    <a href="{{ url_for('my_bookings') }}"><i class="fas fa-list"></i> My Bookings</a>
+                    <a href="{{ url_for('transport') }}"><i class="fas fa-bus"></i> Transport</a>
+                    <a href="{{ url_for('review') }}"><i class="fas fa-comment"></i> Feedback</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>&copy; 2025 Wanderlust Tourist Management System. All Rights Reserved.</p>
+        <p style="margin-top: 0.5rem; opacity: 0.8;">Explore the world with confidence</p>
+    </footer>
+
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(100px)';
+                setTimeout(() => alert.remove(), 400);
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

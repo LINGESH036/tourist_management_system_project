@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Packages - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Tour Packages</h1>
+        <p class="hero-subtitle">Find the perfect package for your dream vacation</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Available Packages</h2>
+    
+    {% if packages %}
+    <div class="card-grid">
+        {% for package in packages %}
+        <div class="card">
+            <div class="card-image-container">
+                <img src="{{ package.image_url }}?w=400&h=300&fit=crop" 
+                     alt="{{ package.name }}" class="card-image">
+                <div class="card-badge">{{ package.package_type }}</div>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ package.name }}</h3>
+                <p class="card-text">
+                    <i class="fas fa-clock" style="color: var(--accent);"></i>
+                    {{ package.duration }}
+                </p>
+                <p class="card-text">{{ package.description }}</p>
+                <div class="card-price">
+                    <i class="fas fa-rupee-sign"></i> {{ "%.2f"|format(package.price) }}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('booking') }}?package={{ package.id }}" 
+                   class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-ticket-alt"></i> Book Now
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fas fa-box-open" style="font-size: 4rem; color: #ddd;"></i>
+        <p style="margin-top: 1rem; color: #666;">No packages available at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Manage Bookings - Admin{% endblock %}
+{% block extra_css %}
+<style>
+.admin-page { max-width:1300px; margin:0 auto; padding:100px 1.5rem 3rem; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; }
+.page-header h2 { font-size:1.8rem; font-weight:700; color:#2d3436; }
+.bookings-table { background:white; border-radius:16px; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th { background:#f8f9fa; padding:0.75rem 1rem; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; color:#636e72; white-space:nowrap; }
+td { padding:0.85rem 1rem; border-top:1px solid #f0f0f0; font-size:0.87rem; vertical-align:middle; }
+tr:hover td { background:#fafafa; }
+.badge { padding:0.25rem 0.7rem; border-radius:20px; font-size:0.75rem; font-weight:600; white-space:nowrap; }
+.badge-pending { background:#fff3cd; color:#856404; }
+.badge-confirmed { background:#d1e7dd; color:#0a3622; }
+.badge-cancelled { background:#f8d7da; color:#842029; }
+.action-btns { display:flex; gap:0.4rem; }
+.btn-edit { background:#3498db; color:white; padding:0.3rem 0.7rem; border-radius:7px; text-decoration:none; font-size:0.78rem; font-weight:600; white-space:nowrap; }
+.btn-delete { background:#e74c3c; color:white; padding:0.3rem 0.7rem; border-radius:7px; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; }
+.status-form { display:inline; }
+.status-select { padding:0.25rem 0.5rem; border:1.5px solid #dfe6e9; border-radius:6px; font-size:0.78rem; outline:none; cursor:pointer; }
+.empty-state { text-align:center; padding:3rem; color:#636e72; }
+.summary-row { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.summary-chip { background:white; border-radius:10px; padding:0.7rem 1.2rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); font-size:0.85rem; font-weight:600; }
+.chip-count { font-size:1.2rem; font-weight:700; display:block; color:#2d3436; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="page-header">
+        <h2><i class="fas fa-ticket-alt"></i> Bookings Management</h2>
+    </div>
+
+    <div class="summary-row">
+        <div class="summary-chip">
+            <span class="chip-count">{{ bookings|selectattr('status','equalto','pending')|list|length }}</span> Pending
+        </div>
+        <div class="summary-chip">
+            <span class="chip-count">{{ bookings|selectattr('status','equalto','confirmed')|list|length }}</span> Confirmed
+        </div>
+        <div class="summary-chip">
+            <span class="chip-count">{{ bookings|selectattr('status','equalto','cancelled')|list|length }}</span> Cancelled
+        </div>
+        <div class="summary-chip">
+            <span class="chip-count">{{ bookings|length }}</span> Total
+        </div>
+    </div>
+
+    <div class="bookings-table">
+        {% if bookings %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th><th>Customer</th><th>Email</th><th>Package</th>
+                    <th>Travel Date</th><th>People</th><th>Amount</th>
+                    <th>Status</th><th>Booked</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td><strong>#{{ b.id }}</strong></td>
+                <td>{{ b.full_name }}</td>
+                <td style="color:#636e72;">{{ b.email }}</td>
+                <td>{{ b.package.name }}</td>
+                <td>{{ b.travel_date }}</td>
+                <td style="text-align:center;">{{ b.num_people }}</td>
+                <td><strong style="color:#27ae60;">₹{{ "%.0f"|format(b.total_amount) }}</strong></td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin_booking_update_status', id=b.id) }}" class="status-form">
+                        <select name="status" class="status-select" onchange="this.form.submit()">
+                            <option value="pending" {% if b.status=='pending' %}selected{% endif %}>Pending</option>
+                            <option value="confirmed" {% if b.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                            <option value="cancelled" {% if b.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </form>
+                </td>
+                <td style="color:#636e72; font-size:0.8rem;">{{ b.created_at.strftime('%b %d, %Y') }}</td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('admin_bookings_edit', id=b.id) }}" class="btn-edit"><i class="fas fa-edit"></i></a>
+                        <form method="POST" action="{{ url_for('admin_bookings_delete', id=b.id) }}" style="display:inline;" onsubmit="return confirm('Delete booking #{{ b.id }}?')">
+                            <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox" style="font-size:3rem; color:#dfe6e9; display:block; margin-bottom:1rem;"></i>
+            No bookings yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

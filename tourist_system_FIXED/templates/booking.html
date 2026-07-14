@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Booking - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Book Your Tour</h1>
+        <p class="hero-subtitle">Reserve your spot for an unforgettable journey</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Tour Booking</h2>
+    
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('booking') }}">
+            <div class="form-group">
+                <label for="package_id">
+                    <i class="fas fa-box"></i> Select Package
+                </label>
+                <select id="package_id" name="package_id" class="form-control" required onchange="updatePrice()">
+                    <option value="">Choose a package</option>
+                    {% for package in packages %}
+                    <option value="{{ package.id }}" data-price="{{ package.price }}" 
+                            {% if request.args.get('package') == package.id|string %}selected{% endif %}>
+                        {{ package.name }} - ₹{{ "%.2f"|format(package.price) }} ({{ package.duration }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="full_name">
+                    <i class="fas fa-user"></i> Full Name
+                </label>
+                <input type="text" id="full_name" name="full_name" class="form-control" 
+                       placeholder="Enter your full name" 
+                       value="{{ session.user_name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email Address
+                </label>
+                <input type="email" id="email" name="email" class="form-control" 
+                       placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="travel_date">
+                    <i class="fas fa-calendar"></i> Travel Date
+                </label>
+                <input type="date" id="travel_date" name="travel_date" class="form-control" 
+                       min="{{ today }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="num_people">
+                    <i class="fas fa-users"></i> Number of People
+                </label>
+                <input type="number" id="num_people" name="num_people" class="form-control" 
+                       min="1" max="20" value="1" required onchange="updatePrice()">
+            </div>
+            
+            <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--dark);">
+                    <i class="fas fa-receipt"></i> Booking Summary
+                </h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Package Price:</span>
+                    <span id="package-price">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Number of People:</span>
+                    <span id="num-people-display">1</span>
+                </div>
+                <hr style="margin: 1rem 0; border: none; border-top: 2px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 700; color: var(--primary);">
+                    <span>Total Amount:</span>
+                    <span id="total-amount">₹0.00</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-arrow-right"></i> Proceed to Payment
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updatePrice() {
+        const packageSelect = document.getElementById('package_id');
+        const numPeople = parseInt(document.getElementById('num_people').value) || 1;
+        
+        if (packageSelect.value) {
+            const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+            const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+            const total = price * numPeople;
+            
+            document.getElementById('package-price').textContent = '₹' + price.toFixed(2);
+            document.getElementById('num-people-display').textContent = numPeople;
+            document.getElementById('total-amount').textContent = '₹' + total.toFixed(2);
+        }
+    }
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('travel_date').setAttribute('min', today);
+    
+    // Update price on page load
+    updatePrice();
+</script>
+{% endblock %}

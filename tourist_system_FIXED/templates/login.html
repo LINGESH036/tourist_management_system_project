@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tourist Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600');">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-globe-americas"></i> Wanderlust
+            </h1>
+            <p class="hero-subtitle">Begin Your Journey to Extraordinary Destinations</p>
+            
+            <div class="form-container" style="margin-top: 2rem;">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: var(--dark);">
+                    <i class="fas fa-sign-in-alt"></i> Welcome Back
+                </h2>
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="password" name="password" class="form-control" 
+                               placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                
+                <p style="text-align: center; margin-top: 1.5rem; color: #666;">
+                    New to Wanderlust? 
+                    <a href="{{ url_for('register') }}" class="link-text">Create an Account</a>
+                </p>
+                
+                <p style="text-align: center; margin-top: 1rem; color: #666;">
+                    Administrator? 
+                    <a href="{{ url_for('admin_login') }}" class="link-text">Admin Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(100px)';
+                setTimeout(() => alert.remove(), 400);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

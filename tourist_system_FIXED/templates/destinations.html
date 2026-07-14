@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Destinations - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Discover Amazing Destinations</h1>
+        <p class="hero-subtitle">Explore the world's most beautiful places</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Popular Destinations</h2>
+    
+    {% if destinations %}
+    <div class="card-grid">
+        {% for destination in destinations %}
+        <div class="card">
+            <div class="card-image-container">
+                <img src="{{ destination.image_url }}?w=400&h=300&fit=crop" 
+                     alt="{{ destination.name }}" class="card-image">
+                <div class="card-badge">{{ destination.category }}</div>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">
+                    <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
+                    {{ destination.name }}
+                </h3>
+                <p class="card-text">{{ destination.description }}</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('packages') }}" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-arrow-right"></i> View Packages
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fas fa-map-marked-alt" style="font-size: 4rem; color: #ddd;"></i>
+        <p style="margin-top: 1rem; color: #666;">No destinations available at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

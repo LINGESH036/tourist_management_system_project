@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback - Tourist Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=1600'); min-height: 60vh;">
+    <div class="hero-content">
+        <h1 class="hero-title">Share Your Experience</h1>
+        <p class="hero-subtitle">Help us serve you better with your valuable feedback</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <h2 class="section-title">Submit Feedback</h2>
+    
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('review') }}">
+            <div class="form-group">
+                <label for="name">
+                    <i class="fas fa-user"></i> Your Name
+                </label>
+                <input type="text" id="name" name="name" class="form-control" 
+                       placeholder="Enter your name" value="{{ session.user_name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="rating">
+                    <i class="fas fa-star"></i> Rating
+                </label>
+                <select id="rating" name="rating" class="form-control" required>
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ Very Good</option>
+                    <option value="3">⭐⭐⭐ Good</option>
+                    <option value="2">⭐⭐ Fair</option>
+                    <option value="1">⭐ Poor</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="review_text">
+                    <i class="fas fa-comment"></i> Your Review
+                </label>
+                <textarea id="review_text" name="review_text" class="form-control" 
+                          rows="6" placeholder="Share your experience with us..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-paper-plane"></i> Submit Feedback
+            </button>
+        </form>
+    </div>
+    
+    {% if reviews %}
+    <div style="margin-top: 4rem;">
+        <h2 class="section-title">Recent Reviews</h2>
+        
+        <div style="display: grid; gap: 1.5rem; max-width: 900px; margin: 2rem auto;">
+            {% for review in reviews %}
+            <div style="background: white; padding: 2rem; border-radius: 15px; 
+                        box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: var(--dark);">
+                        <i class="fas fa-user-circle" style="color: var(--primary);"></i>
+                        {{ review.name }}
+                    </h4>
+                    <div style="color: var(--accent); font-size: 1.2rem;">
+                        {% for i in range(review.rating) %}⭐{% endfor %}
+                    </div>
+                </div>
+                <p style="color: #666; line-height: 1.6; margin: 0;">{{ review.review_text }}</p>
+                <p style="margin-top: 1rem; font-size: 0.85rem; color: #999;">
+                    <i class="fas fa-clock"></i> {{ review.created_at.strftime('%B %d, %Y') }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

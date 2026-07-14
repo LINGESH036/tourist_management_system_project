@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Manage Destinations - Admin{% endblock %}
+{% block extra_css %}
+<style>
+.admin-page { max-width:1200px; margin:0 auto; padding:100px 1.5rem 3rem; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; }
+.page-header h2 { font-size:1.8rem; font-weight:700; color:#2d3436; }
+.btn-add { background:linear-gradient(135deg,#e74c3c,#c0392b); color:white; padding:0.7rem 1.5rem; border-radius:10px; text-decoration:none; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; }
+.btn-add:hover { opacity:0.9; }
+.add-form-box { background:white; border-radius:16px; padding:2rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:2rem; display:none; }
+.add-form-box.open { display:block; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.form-group { display:flex; flex-direction:column; gap:0.4rem; }
+.form-group label { font-size:0.85rem; font-weight:600; color:#636e72; text-transform:uppercase; letter-spacing:0.5px; }
+.form-group input, .form-group select, .form-group textarea {
+    padding:0.65rem 0.9rem; border:1.5px solid #dfe6e9; border-radius:8px;
+    font-size:0.9rem; outline:none; transition:border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#e74c3c; }
+.form-full { grid-column:1/-1; }
+.dest-table { background:white; border-radius:16px; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th { background:#f8f9fa; padding:0.75rem 1rem; text-align:left; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; color:#636e72; }
+td { padding:0.85rem 1rem; border-top:1px solid #f0f0f0; font-size:0.9rem; vertical-align:middle; }
+tr:hover td { background:#fafafa; }
+.dest-img { width:60px; height:45px; object-fit:cover; border-radius:6px; }
+.badge-cat { background:#ffeaa7; color:#856404; padding:0.2rem 0.6rem; border-radius:20px; font-size:0.75rem; font-weight:600; }
+.action-btns { display:flex; gap:0.5rem; }
+.btn-edit { background:#3498db; color:white; padding:0.35rem 0.8rem; border-radius:7px; text-decoration:none; font-size:0.8rem; font-weight:600; }
+.btn-delete { background:#e74c3c; color:white; padding:0.35rem 0.8rem; border-radius:7px; border:none; cursor:pointer; font-size:0.8rem; font-weight:600; }
+.btn-edit:hover { background:#2980b9; }
+.btn-delete:hover { background:#c0392b; }
+.empty-state { text-align:center; padding:3rem; color:#636e72; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="page-header">
+        <h2><i class="fas fa-map-marked-alt"></i> Destinations</h2>
+        <button class="btn-add" onclick="document.getElementById('addForm').classList.toggle('open')">
+            <i class="fas fa-plus"></i> Add Destination
+        </button>
+    </div>
+
+    <!-- Add Form -->
+    <div class="add-form-box" id="addForm">
+        <h3 style="margin-bottom:1.5rem; font-size:1.1rem; color:#2d3436;"><i class="fas fa-plus-circle"></i> New Destination</h3>
+        <form method="POST" action="{{ url_for('admin_destinations') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Destination Name</label>
+                    <input type="text" name="name" placeholder="e.g., Goa, Paris" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" required>
+                        <option value="">Select category</option>
+                        <option>Beach Destinations</option>
+                        <option>Hill Stations</option>
+                        <option>Historical Places</option>
+                        <option>Adventure Spots</option>
+                        <option>Wildlife & Nature</option>
+                        <option>International Destinations</option>
+                    </select>
+                </div>
+                <div class="form-group form-full">
+                    <label>Description</label>
+                    <textarea name="description" rows="2" placeholder="Brief description" required></textarea>
+                </div>
+                <div class="form-group form-full">
+                    <label>Image URL (Unsplash recommended)</label>
+                    <input type="url" name="image_url" placeholder="https://images.unsplash.com/..." required>
+                </div>
+            </div>
+            <div style="margin-top:1.2rem; display:flex; gap:0.8rem;">
+                <button type="submit" class="btn-add"><i class="fas fa-save"></i> Save Destination</button>
+                <button type="button" onclick="document.getElementById('addForm').classList.remove('open')"
+                    style="background:#dfe6e9; color:#636e72; padding:0.7rem 1.2rem; border-radius:10px; border:none; cursor:pointer; font-weight:600;">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="dest-table">
+        <h3 style="margin-bottom:1.2rem; font-size:1rem; color:#2d3436;">All Destinations ({{ destinations|length }})</h3>
+        {% if destinations %}
+        <table>
+            <thead>
+                <tr><th>Image</th><th>Name</th><th>Category</th><th>Description</th><th>Added</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for d in destinations %}
+            <tr>
+                <td><img src="{{ d.image_url }}?w=120&h=90&fit=crop" alt="{{ d.name }}" class="dest-img"></td>
+                <td><strong>{{ d.name }}</strong></td>
+                <td><span class="badge-cat">{{ d.category }}</span></td>
+                <td style="max-width:250px; color:#636e72; font-size:0.85rem;">{{ d.description[:80] }}{% if d.description|length > 80 %}...{% endif %}</td>
+                <td style="color:#636e72; font-size:0.85rem;">{{ d.created_at.strftime('%b %d, %Y') }}</td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('admin_destinations_edit', id=d.id) }}" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                        <form method="POST" action="{{ url_for('admin_destinations_delete', id=d.id) }}" style="display:inline;" onsubmit="return confirm('Delete {{ d.name }}? This cannot be undone.')">
+                            <button type="submit" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-map" style="font-size:3rem; color:#dfe6e9; display:block; margin-bottom:1rem;"></i>
+            No destinations yet. Click "Add Destination" to get started.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
